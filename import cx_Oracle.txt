@@ -1,0 +1,58 @@
+import cx_Oracle
+
+def connect_to_oracle(username, password, dsn_tns):
+    """
+    Connects to an Oracle database.
+
+    Args:
+        username: The Oracle username.
+        password: The Oracle password.
+        dsn_tns: The Oracle TNS name (e.g., 'xe' or a full TNS string).  Can also be a connection string.
+
+    Returns:
+        A connection object if successful, None otherwise.  Prints error messages to the console.
+    """
+    try:
+      # Option 1: Using DSN (Simplest if TNSNAMES.ORA is configured correctly)
+      # connection = cx_Oracle.connect(username, password, dsn_tns)
+
+      # Option 2: Using a connection string (More explicit)
+      # Example:  "username/password@hostname:port/service_name"
+      # connection_string = f"{username}/{password}@{hostname}:{port}/{service_name}"
+      # connection = cx_Oracle.connect(connection_string)
+
+      # Option 3:  Using a dictionary (Most explicit, useful if TNSNAMES.ORA is not used)
+      connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
+
+      print("Successfully connected to Oracle database.")
+      return connection
+
+    except cx_Oracle.Error as error:
+        print(f"Oracle Error: {error}")
+        error_code, error_message = error.args
+        print(f"Error Code: {error_code}")
+        print(f"Error Message: {error_message}")
+        return None
+    except Exception as e: # Catch other potential errors, like missing cx_Oracle
+        print(f"An error occurred: {e}")
+        return None
+
+
+def execute_query(connection, sql_query):
+    """
+    Executes an SQL query against the Oracle database.
+
+    Args:
+        connection: The Oracle connection object.
+        sql_query: The SQL query to execute.
+
+    Returns:
+        A cursor object if successful (which can be used to fetch results), None otherwise.
+    """
+    try:
+        cursor = connection.cursor()
+        cursor.execute(sql_query)
+        return cursor
+    except cx_Oracle.Error as error:
+        print(f"Oracle Error: {error}")
+        return None
